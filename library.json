@@ -1,0 +1,21 @@
+{
+	"name": "libps2",
+	"version": "0.1.0",
+	"description": "PS/2 minimal protocol library.",
+	"license": "MIT",
+	"frameworks": "Arduino",
+	"build": {
+		"srcDir": "lib/libps2",
+		"flags": "-std=gnu++17",
+		"unflags": "-std=gnu++11"
+	},
+	"export": {
+		"include": [
+			"lib/libps2",
+			"example",
+			"README.md",
+			"LICENSE.txt"
+		]
+	},
+	"dependencies": {}
+}
