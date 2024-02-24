@@ -1,6 +1,6 @@
 {
 	"name": "libps2",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "PS/2 minimal protocol library.",
 	"license": "MIT",
 	"frameworks": "Arduino",
