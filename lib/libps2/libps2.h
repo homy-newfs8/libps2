@@ -46,7 +46,7 @@ class PS2 {
 	isr_state_t isr_state = isr_state_t::idle;
 	uint8_t clock_pin;
 	uint8_t data_pin;
-	int8_t bit_count;
+	uint8_t bit_mask;
 	uint8_t data;
 	bool parity;
 

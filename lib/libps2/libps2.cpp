@@ -32,7 +32,7 @@ PS2::end() {
 void
 PS2::reset_for_recv() {
 	isr_state = isr_state_t::idle;
-	bit_count = 0;
+	bit_mask = 1;
 	data = 0;
 	parity = false;
 	pinMode(data_pin, INPUT_PULLUP);
@@ -41,7 +41,7 @@ PS2::reset_for_recv() {
 void
 PS2::reset_for_send(uint8_t data) {
 	this->data = data;
-	bit_count = 0;
+	bit_mask = 1;
 	parity = false;
 	isr_state = isr_state_t::s_wait;
 }
@@ -76,12 +76,12 @@ PS2::clock_isr() {
 	last_interrupted = now;
 	switch (isr_state) {
 		case isr_state_t::s_wait: {
-			int d = (data & (1 << bit_count)) ? HIGH : LOW;
+			int d = (data & bit_mask) ? HIGH : LOW;
 			digitalWrite(data_pin, d);
 			if (d)
 				parity = !parity;
-			bit_count++;
-			if (bit_count == 8) {
+			bit_mask <<= 1;
+			if (bit_mask == 0) {
 				isr_state = isr_state_t::s_parity;
 			}
 			break;
@@ -113,9 +113,9 @@ PS2::clock_isr() {
 			if (d == HIGH) {
 				parity = !parity;
 			}
-			data |= d == HIGH ? (1 << bit_count) : 0;
-			bit_count++;
-			if (bit_count == 8) {
+			data |= d == HIGH ? bit_mask : 0;
+			bit_mask <<= 1;
+			if (bit_mask == 0) {
 				isr_state = isr_state_t::r_parity;
 			}
 			break;
