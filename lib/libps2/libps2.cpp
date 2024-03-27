@@ -3,6 +3,12 @@
 
 namespace libps2 {
 
+namespace {
+
+constexpr uint8_t PS2_INPUT_MODE = INPUT;
+
+}
+
 PS2::PS2() {}
 
 void
@@ -14,8 +20,8 @@ bool
 PS2::begin(uint8_t data_pin, uint8_t clock_pin) {
 	this->clock_pin = clock_pin;
 	this->data_pin = data_pin;
-	pinMode(clock_pin, INPUT_PULLUP);
-	pinMode(data_pin, INPUT_PULLUP);
+	pinMode(clock_pin, PS2_INPUT_MODE);
+	pinMode(data_pin, PS2_INPUT_MODE);
 
 	reset_for_recv();
 	start_interrupt();
@@ -35,7 +41,7 @@ PS2::reset_for_recv() {
 	bit_mask = 1;
 	data = 0;
 	parity = false;
-	pinMode(data_pin, INPUT_PULLUP);
+	pinMode(data_pin, PS2_INPUT_MODE);
 }
 
 void
@@ -64,13 +70,13 @@ PS2::send(uint8_t data) {
 	digitalWrite(data_pin, LOW);  // Send request
 	reset_for_send(data);
 	start_interrupt();
-	pinMode(clock_pin, INPUT_PULLUP);
+	pinMode(clock_pin, PS2_INPUT_MODE);
 }
 
 void
 PS2::clock_isr() {
 	auto now = micros();
-	if (isr_state != isr_state_t::idle && isr_state != isr_state_t::s_wait && now - last_interrupted > 100) {
+	if (isr_state != isr_state_t::idle && isr_state != isr_state_t::s_wait && now - last_interrupted > 150) {
 		reset_for_recv();
 	}
 	last_interrupted = now;
@@ -91,7 +97,7 @@ PS2::clock_isr() {
 			isr_state = isr_state_t::s_stop;
 			break;
 		case isr_state_t::s_stop:
-			pinMode(data_pin, INPUT_PULLUP);
+			pinMode(data_pin, PS2_INPUT_MODE);
 			isr_state = isr_state_t::s_wait_ack;
 			break;
 		case isr_state_t::s_wait_ack: {
